@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Андрей — Загородные дома</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --card: #111111;
+      --border: rgba(255,255,255,0.07);
+      --accent1: #7c3aed;
+      --accent2: #06b6d4;
+      --accent3: #f59e0b;
+      --text: #e2e8f0;
+      --muted: #64748b;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animated background particles */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Glowing orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.18;
+      pointer-events: none;
+      animation: drift 12s ease-in-out infinite alternate;
+    }
+    .orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; animation-duration: 14s; }
+    .orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-duration: 10s; animation-delay: -4s; }
+    .orb-3 { width: 250px; height: 250px; background: var(--accent3); top: 50%; right: 20%; animation-duration: 16s; animation-delay: -8s; }
+
+    @keyframes drift {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 30px) scale(1.1); }
+    }
+
+    /* Card */
+    .card {
+      position: relative;
+      z-index: 1;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 52px 44px 44px;
+      max-width: 420px;
+      width: calc(100% - 32px);
+      text-align: center;
+      backdrop-filter: blur(20px);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.04),
+        0 24px 80px rgba(0,0,0,0.7),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      animation: fadeUp 0.8s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(32px) scale(.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Top accent line */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%; transform: translateX(-50%);
+      width: 60%; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent1), var(--accent2), transparent);
+      border-radius: 0 0 4px 4px;
+    }
+
+    /* Avatar */
+    .avatar-wrap {
+      margin: 0 auto 28px;
+      width: 90px; height: 90px;
+      position: relative;
+    }
+    .avatar-ring {
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      animation: spin 6s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .avatar-ring::before {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      background: var(--card);
+      border-radius: 50%;
+    }
+    .avatar {
+      position: relative;
+      z-index: 1;
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1e1e2e, #2d2d44);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .avatar svg { width: 48px; height: 48px; }
+
+    /* Name */
+    .name {
+      font-size: clamp(2rem, 8vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent2) 50%, var(--accent1) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+      display: inline-block;
+      animation: glowPulse 3s ease-in-out infinite;
+    }
+    @keyframes glowPulse {
+      0%, 100% { filter: drop-shadow(0 0 8px rgba(124,58,237,.5)) drop-shadow(0 0 20px rgba(6,182,212,.3)); }
+      50%       { filter: drop-shadow(0 0 16px rgba(124,58,237,.8)) drop-shadow(0 0 40px rgba(6,182,212,.5)); }
+    }
+
+    /* Divider */
+    .divider {
+      margin: 18px auto 0;
+      width: 40px; height: 2px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      border-radius: 2px;
+    }
+
+    /* Specialization badge */
+    .spec-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+      padding: 8px 18px;
+      background: rgba(124,58,237,0.12);
+      border: 1px solid rgba(124,58,237,0.25);
+      border-radius: 40px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #a78bfa;
+      letter-spacing: 0.3px;
+    }
+    .spec-badge svg { flex-shrink: 0; }
+
+    /* Tagline */
+    .tagline {
+      margin-top: 14px;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* Stats row */
+    .stats {
+      display: flex;
+      gap: 1px;
+      margin: 28px 0;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .stat {
+      flex: 1;
+      padding: 14px 8px;
+      background: rgba(255,255,255,0.02);
+      transition: background .2s;
+    }
+    .stat:hover { background: rgba(255,255,255,0.05); }
+    .stat + .stat { border-left: 1px solid var(--border); }
+    .stat-num {
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent2), var(--accent1));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Social icons */
+    .socials {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .social-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      text-decoration: none;
+      color: var(--muted);
+      transition: all .25s cubic-bezier(.22,1,.36,1);
+      position: relative;
+      overflow: hidden;
+    }
+    .social-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      opacity: 0;
+      transition: opacity .25s;
+    }
+    .social-btn:hover {
+      transform: translateY(-4px) scale(1.08);
+      border-color: transparent;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+    }
+    .social-btn:hover::before { opacity: 1; }
+    .social-btn:hover svg { position: relative; z-index: 1; color: #fff; }
+
+    .social-btn.telegram::before  { background: linear-gradient(135deg, #2aabee, #229ed9); }
+    .social-btn.whatsapp::before  { background: linear-gradient(135deg, #25d366, #128c7e); }
+    .social-btn.instagram::before { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+    .social-btn.vk::before        { background: linear-gradient(135deg, #4680c2, #2787f5); }
+
+    .social-btn.telegram:hover  { color: #2aabee; }
+    .social-btn.whatsapp:hover  { color: #25d366; }
+    .social-btn.instagram:hover { color: #f09433; }
+    .social-btn.vk:hover        { color: #2787f5; }
+
+    /* CTA button */
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 16px 24px;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent1) 0%, #5b21b6 50%, var(--accent2) 100%);
+      background-size: 200% 200%;
+      background-position: 0% 50%;
+      text-decoration: none;
+      transition: all .3s cubic-bezier(.22,1,.36,1);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(124,58,237,0.35);
+      animation: bgShift 4s ease infinite;
+    }
+    @keyframes bgShift {
+      0%,100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
+    }
+    .cta::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(rgba(255,255,255,.12), transparent);
+      border-radius: 16px;
+    }
+    .cta:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 40px rgba(124,58,237,0.55);
+    }
+    .cta:active { transform: translateY(0) scale(.99); }
+    .cta svg { position: relative; z-index: 1; }
+    .cta span { position: relative; z-index: 1; }
+
+    /* Ripple */
+    .cta .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,.25);
+      transform: scale(0);
+      animation: ripple .6s linear;
+      pointer-events: none;
+    }
+    @keyframes ripple {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 24px;
+      font-size: 0.72rem;
+      color: #2d2d3a;
+      letter-spacing: 0.5px;
+    }
+
+    /* Responsive */
+    @media (max-width: 400px) {
+      .card { padding: 40px 24px 36px; }
+      .stats { gap: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="card">
+
+    <!-- Avatar -->
+    <div class="avatar-wrap">
+      <div class="avatar-ring"></div>
+      <div class="avatar">
+        <!-- House icon -->
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 12L12 3L21 12" stroke="url(#g1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M5 10V20C5 20.55 5.45 21 6 21H10V15H14V21H18C18.55 21 19 20.55 19 20V10" stroke="url(#g1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="g1" x1="3" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#7c3aed"/>
+              <stop offset="1" stop-color="#06b6d4"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Name -->
+    <div class="name">Андрей</div>
+    <div class="divider"></div>
+
+    <!-- Badge -->
+    <div class="spec-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      Строительство загородных домов
+    </div>
+
+    <p class="tagline">Проектирую и строю дома вашей мечты&nbsp;—<br>от фундамента до ключей</p>
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">10+</div>
+        <div class="stat-label">лет опыта</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">80+</div>
+        <div class="stat-label">проектов</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">под ключ</div>
+      </div>
+    </div>
+
+    <!-- Social icons -->
+    <div class="socials">
+
+      <!-- Telegram -->
+      <a href="https://t.me/NewMoscovia" target="_blank" class="social-btn telegram" aria-label="Telegram">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+        </svg>
+      </a>
+
+      <!-- WhatsApp -->
+      <a href="https://wa.me/79000000000" target="_blank" class="social-btn whatsapp" aria-label="WhatsApp">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/>
+        </svg>
+      </a>
+
+      <!-- Instagram -->
+      <a href="#" class="social-btn instagram" aria-label="Instagram">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+        </svg>
+      </a>
+
+      <!-- VK -->
+      <a href="#" class="social-btn vk" aria-label="VKontakte">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.862-.523-2.049-1.71-1.033-1.01-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.558c0 .424-.135.677-1.253.677-1.846 0-3.896-1.118-5.335-3.202C4.624 10.857 4.03 8.57 4.03 8.096c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.743c.372 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.253-1.406 2.15-3.574 2.15-3.574.119-.254.322-.491.762-.491h1.744c.525 0 .644.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.049.17.474-.085.712-.576.712z"/>
+        </svg>
+      </a>
+
+    </div>
+
+    <!-- CTA button -->
+    <a href="https://t.me/NewMoscovia" target="_blank" class="cta" id="ctaBtn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+      </svg>
+      <span>Написать мне</span>
+    </a>
+
+    <div class="footer">© 2026 Андрей · Загородное строительство</div>
+  </div>
+
+  <script>
+    // Ripple effect on CTA button
+    document.getElementById('ctaBtn').addEventListener('click', function(e) {
+      const btn = this;
+      const rect = btn.getBoundingClientRect();
+      const ripple = document.createElement('span');
+      const size = Math.max(rect.width, rect.height);
+      ripple.className = 'ripple';
+      ripple.style.cssText = `
+        width: ${size}px; height: ${size}px;
+        left: ${e.clientX - rect.left - size / 2}px;
+        top: ${e.clientY - rect.top - size / 2}px;
+      `;
+      btn.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    });
+
+    // Tilt effect on card (desktop only)
+    const card = document.querySelector('.card');
+    if (window.matchMedia('(hover: hover)').matches) {
+      document.addEventListener('mousemove', (e) => {
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight / 2;
+        const dx = (e.clientX - cx) / cx;
+        const dy = (e.clientY - cy) / cy;
+        card.style.transform = `perspective(800px) rotateY(${dx * 4}deg) rotateX(${-dy * 4}deg)`;
+      });
+      document.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+        card.style.transition = 'transform .5s ease';
+        setTimeout(() => card.style.transition = '', 500);
+      });
+    }
+  </script>
+</body>
+</html>
